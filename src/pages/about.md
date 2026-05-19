@@ -25,6 +25,4 @@ Video games are part of my DNA. From epic RPGs to competitive shooters, I enjoy 
 
 **Devosfera** was born as a space to document my journey as a developer, share what I learn, and connect with people who share the same passions. Here you will find posts about development, technology, and the occasional random late-night reflection.
 
-If you want to connect, don't hesitate to find me on [GitHub](https://github.com/0xdres/), [X](https://x.com/avdyen), or [LinkedIn](https://www.linkedin.com/in/avdyan/). It is always good to meet cool people from the community.
-
 > _"Code is poetry, but with more semicolons."_ — Me, probably

@@ -55,6 +55,36 @@ export default defineConfig({
         context: "client",
         optional: true,
       }),
+      // ── Personal / social links ──────────────────────────────────────────
+      // Set these in .env (never commit personal data to the repo).
+      // Any variable left unset will simply hide that social link.
+      // See .env.example for the full list.
+      PUBLIC_SOCIAL_GITHUB: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
+      PUBLIC_SOCIAL_X: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
+      PUBLIC_SOCIAL_LINKEDIN: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
+      PUBLIC_SOCIAL_EMAIL: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
+      // URL of the hosted repo used by the "Edit this post" button
+      PUBLIC_EDIT_POST_URL: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
     },
   },
 

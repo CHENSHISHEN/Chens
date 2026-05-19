@@ -1,7 +1,7 @@
 export const SITE = {
   website: "https://devosfera.vercel.app/",
   author: "Andrés Ujpán",
-  profile: "https://github.com/0xdres",
+  profile: process.env.PUBLIC_SOCIAL_GITHUB ?? "", // set in .env
   desc: "A space where curiosity becomes code. Exploring web development, software architecture and everything that makes the tech world spin.",
   title: "Astro Devosfera",
   ogImage: "devosfera-og.webp", // located in the public folder
@@ -26,7 +26,7 @@ export const SITE = {
   editPost: {
     enabled: true,
     text: "Edit this post",
-    url: "https://github.com/0xdres/astro-devosfera/edit/main/",
+    url: process.env.PUBLIC_EDIT_POST_URL ?? "", // set in .env
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"

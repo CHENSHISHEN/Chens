@@ -8,6 +8,11 @@ Heavily customized version of the [AstroPaper](https://github.com/satnaing/astro
 
 > **Note:** This project is primarily my personal blog. If anyone wishes to use it, feel free to delete all entries and edit the settings freely.
 
+> [!IMPORTANT]
+> **Social links and personal URLs are no longer hardcoded.**
+> They are loaded from environment variables so that forks of this repo do not expose the original author's personal data.
+> Copy `.env.example` → `.env` and fill in your own values before running the project. See the [Configuration](#%EF%B8%8F-configuration) section for details.
+
 ---
 
 ## Table of contents
@@ -21,8 +26,8 @@ Heavily customized version of the [AstroPaper](https://github.com/satnaing/astro
    - [Image galleries](#galleries-srcdatagalleries)
 6. [GalleryEmbed component](#%EF%B8%8F-galleryembed-component)
 7. [Configuration](#%EF%B8%8F-configuration)
-9. [Upstream issues resolved](#-upstream-issues-resolved)
-10. [License](#-license)
+8. [Upstream issues resolved](#-upstream-issues-resolved)
+9. [License](#-license)
 
 ---
 
@@ -222,7 +227,30 @@ All site configuration lives in `src/config.ts` (the `SITE` constant). It includ
 
 Social links and "Share" links are defined in `src/constants.ts`.
 
-> For details on visual effects, typography and the design system see [CUSTOMIZATIONS.md](CUSTOMIZATIONS.md).
+> [!WARNING]
+> **Breaking change — social links moved to environment variables.**
+>
+> Previously, social URLs (GitHub, X, LinkedIn, email) and the "Edit this post" URL were hardcoded in `src/constants.ts` and `src/config.ts`. This caused every fork of the repo to expose the original author's personal data publicly, leading to unwanted spam.
+>
+> **What changed:**
+>
+> | Variable | What it controls |
+> | :--- | :--- |
+> | `PUBLIC_SOCIAL_GITHUB` | GitHub profile link & JSON-LD author URL |
+> | `PUBLIC_SOCIAL_X` | X / Twitter profile link |
+> | `PUBLIC_SOCIAL_LINKEDIN` | LinkedIn profile link |
+> | `PUBLIC_SOCIAL_EMAIL` | Contact email (shown as `mailto:` link) |
+> | `PUBLIC_EDIT_POST_URL` | "Edit this post" button base URL |
+>
+> **To restore your socials after forking or updating:**
+>
+> ```bash
+> cp .env.example .env
+> # fill in your own values in .env
+> ```
+>
+> For production deployments (Vercel, Netlify, etc.), add these variables in your platform's environment settings.
+> Any variable left **unset** simply hides that social link — no errors, no broken UI.
 
 ---
 
