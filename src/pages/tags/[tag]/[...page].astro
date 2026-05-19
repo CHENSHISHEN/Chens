@@ -35,9 +35,16 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 const params = Astro.params;
 const { tag } = params;
 const { page, tagName } = Astro.props;
+
+const tagDescription = `All articles tagged with "${tagName}" on ${SITE.title}.`;
+const tagOgImage = `/tags/${tag}/og.png`;
 ---
 
-<Layout title={`Tag: ${tagName} | ${SITE.title}`}>
+<Layout
+  title={`Tag: ${tagName} | ${SITE.title}`}
+  description={tagDescription}
+  ogImage={tagOgImage}
+>
   <Header />
   <Main
     pageTitle={[`Tag:`, `${tagName}`]}
@@ -54,3 +61,4 @@ const { page, tagName } = Astro.props;
 
   <Footer noMarginTop={page.lastPage > 1} />
 </Layout>
+
