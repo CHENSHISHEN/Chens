@@ -14,6 +14,8 @@ export const SITE = {
   showGalleriesInIndex: true, // Show galleries in the general paginated list (only if showGalleries is true)
   showBackButton: true, // show back button in post detail
   showTagsInCards: true, // show tag pills at the bottom of post cards
+  showCoverImages: true, // show cover images (OG) in post cards (requires pnpm build in dev mode)
+  indexPostsGrid: true, // show recent/featured posts in grid layout on the home page (like /posts page)
   heroTerminalPrompt: {
     prefix: "~", // highlighted part on the left
     path: "/ready-to-go", // central prompt text

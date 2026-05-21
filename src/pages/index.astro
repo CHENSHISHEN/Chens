@@ -159,7 +159,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
               {recentPosts.length}]
             </span>
           </div>
-          <ul>
+          <ul class:list={[
+            SITE.indexPostsGrid && "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          ]}>
             {recentPosts.map(
               (data, index) =>
                 index < SITE.postPerIndex && <Card variant="h3" {...data} />
