@@ -1,6 +1,7 @@
 ---
 layout: ../layouts/AboutLayout.astro
 title: "About"
+description: "Get to know Andrés, the web developer, student, and gamer behind Astro Devosfera."
 ---
 
 Welcome to my digital corner. I am a **developer** and **student** passionate about technology, video games, and building things that live on the internet.

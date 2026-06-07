@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
 import { slugifyStr } from "@/utils/slugify";
 import { getEntryPath, getGallerySlug } from "@/utils/contentEntry";
 import { getReadingTime } from "@/utils/readingTime";
@@ -28,13 +29,13 @@ const viewTransitionName = slugifyStr(String(title).replaceAll(".", "-"));
 const readingTime = body ? getReadingTime(body) : null;
 
 // Resolve cover image source
-let coverSrc: string | undefined;
+let coverSrc: string | ImageMetadata | undefined;
 if (SITE.showCoverImages) {
   if (isGallery) {
     // Galleries: prefer coverImage from frontmatter, fallback to first folder image
-    const coverImage = (data as { coverImage?: { src: string } }).coverImage;
+    const coverImage = (data as { coverImage?: ImageMetadata }).coverImage;
     if (coverImage) {
-      coverSrc = coverImage.src;
+      coverSrc = coverImage;
     } else {
       // Load all gallery images at build-time (same pattern as galleries/index.astro)
       const allGalleryImages = import.meta.glob<{ default: ImageMetadata }>(
@@ -47,14 +48,13 @@ if (SITE.showCoverImages) {
         .sort(([a], [b]) => a.localeCompare(b))
         .at(0)?.[1]?.default;
       if (firstImage) {
-        coverSrc = firstImage.src;
+        coverSrc = firstImage;
       }
     }
   } else {
     // Blog posts: prefer frontmatter ogImage, fallback to dynamic OG image
     if ("ogImage" in data && data.ogImage) {
-      // ogImage may be a processed Astro image object or a plain string
-      coverSrc = typeof data.ogImage === "string" ? data.ogImage : (data.ogImage as { src: string }).src;
+      coverSrc = data.ogImage;
     } else if (SITE.dynamicOgImage) {
       // Fallback: dynamically generated OG image (exists in dist/ after pnpm build)
       coverSrc = `${href}/index.png`;
@@ -114,14 +114,25 @@ if (SITE.showCoverImages) {
   <!-- Cover image — wrapped in <a> for clickability; aria-hidden so screen readers skip the duplicate link -->
   {coverSrc && (
     <a href={href} tabindex="-1" aria-hidden="true" class="card-cover-wrapper block" data-cover>
-      <img
-        src={coverSrc}
-        alt=""
-        class="card-cover-img"
-        loading="lazy"
-        decoding="async"
-        onerror="this.closest('[data-cover]').style.display='none'"
-      />
+      {typeof coverSrc === "object" ? (
+        <Image
+          src={coverSrc}
+          alt={title}
+          class="card-cover-img"
+          loading="lazy"
+          widths={[400, 800]}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+      ) : (
+        <img
+          src={coverSrc}
+          alt={title}
+          class="card-cover-img"
+          loading="lazy"
+          decoding="async"
+          onerror="this.closest('[data-cover]').style.display='none'"
+        />
+      )}
       <div class="card-cover-overlay" aria-hidden="true"></div>
     </a>
   )}

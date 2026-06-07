@@ -16,6 +16,9 @@ type Props = {
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
+  prev?: string;
+  next?: string;
+  structuredData?: any;
 };
 
 const {
@@ -28,6 +31,9 @@ const {
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
+  prev,
+  next,
+  structuredData: structuredDataProp,
 } = Astro.props;
 
 // Always build canonical from SITE.website (production URL), never localhost.
@@ -42,34 +48,60 @@ const socialImageURL = new URL(ogImage, Astro.url);
 // Whether this page is a blog post (has a publish date)
 const isArticle = Boolean(pubDatetime);
 
-const structuredData = isArticle
-  ? {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": canonicalURL.toString(),
-      },
-      headline: title,
-      description,
-      image: socialImageURL.toString(),
-      url: canonicalURL.toString(),
-      datePublished: pubDatetime!.toISOString(),
-      ...(modDatetime && { dateModified: modDatetime.toISOString() }),
-      author: [
-        {
+const finalStructuredData = structuredDataProp ?? (
+  isArticle
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": canonicalURL.toString(),
+        },
+        headline: title,
+        description,
+        image: socialImageURL.toString(),
+        url: canonicalURL.toString(),
+        datePublished: pubDatetime!.toISOString(),
+        ...(modDatetime && { dateModified: modDatetime.toISOString() }),
+        author: [
+          {
+            "@type": "Person",
+            name: author,
+            ...(profile && { url: profile }),
+          },
+        ],
+        publisher: {
           "@type": "Person",
           name: author,
           ...(profile && { url: profile }),
         },
-      ],
-      publisher: {
-        "@type": "Person",
-        name: author,
-        ...(profile && { url: profile }),
-      },
-    }
-  : null;
+      }
+    : rawPath === ""
+      ? {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: SITE.title,
+          url: SITE.website,
+          description: SITE.desc,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: `${SITE.website}search/?q={search_term_string}`,
+            "query-input": "required name=search_term_string",
+          },
+        }
+      : rawPath === "/about"
+        ? {
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            mainEntity: {
+              "@type": "Person",
+              name: author,
+              description: "Developer, student, and gamer. Creator of Astro Devosfera.",
+              ...(profile && { url: profile }),
+            },
+          }
+        : null
+);
 
 const showCursorGlow = SITE.backdropEffects.cursorGlow;
 const showGrain = SITE.backdropEffects.grain;
@@ -87,6 +119,10 @@ const showGrain = SITE.backdropEffects.grain;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Relational Pagination Links -->
+    {prev && <link rel="prev" href={prev} />}
+    {next && <link rel="next" href={next} />}
 
     <!-- Load Fonts -->
     <!-- Only preload the primary body font. Others load async to avoid bandwidth contention. -->
@@ -140,13 +176,13 @@ const showGrain = SITE.backdropEffects.grain;
     <meta property="twitter:image" content={socialImageURL} />
     <meta property="twitter:creator" content={SITE.author} />
 
-    <!-- Google JSON-LD Structured data (only on blog posts) -->
+    <!-- Google JSON-LD Structured data -->
     {
-      pubDatetime && (
+      finalStructuredData && (
         <script
           type="application/ld+json"
           is:inline
-          set:html={JSON.stringify(structuredData)}
+          set:html={JSON.stringify(finalStructuredData)}
         />
       )
     }

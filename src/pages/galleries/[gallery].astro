@@ -63,9 +63,35 @@ const images: GalleryImage[] = Object.entries(allImages)
 const hasCoverInFolder = coverImage
   ? images.some(img => img.src.src === coverImage.src)
   : false;
+
+const coverImageSrc = coverImage
+  ? new URL(coverImage.src, Astro.url.origin).href
+  : images.length > 0
+    ? new URL(images[0].src.src, Astro.url.origin).href
+    : undefined;
+
+// Build Schema.org ImageGallery Structured Data
+const gallerySchema = {
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  name: title,
+  description: description,
+  url: new URL(Astro.url.pathname, SITE.website).toString(),
+  ...(coverImageSrc && { image: coverImageSrc }),
+  creator: {
+    "@type": "Person",
+    name: SITE.author,
+    ...(SITE.profile && { url: SITE.profile }),
+  },
+  numberOfItems: images.length,
+};
 ---
 
-<Layout title={`${title} | Galleries | ${SITE.title}`} description={description}>
+<Layout
+  title={`${title} | Galleries | ${SITE.title}`}
+  description={description}
+  structuredData={gallerySchema}
+>
   <Header />
   {SITE.showBackButton && <Breadcrumb withBackButton />}
   <main

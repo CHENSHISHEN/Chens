@@ -26,9 +26,21 @@ export const getStaticPaths = (async ({ paginate }) => {
 
 const { page } = Astro.props;
 const totalPosts = page.total;
+
+// Prevent duplicate metadata in pagination
+const metaTitle = page.currentPage > 1
+  ? `Posts (Page ${page.currentPage} of ${page.lastPage}) | ${SITE.title}`
+  : `Posts | ${SITE.title}`;
+
+const metaDesc = page.currentPage > 1
+  ? `Browse articles, guides, and tutorials on Astro Devosfera (Page ${page.currentPage} of ${page.lastPage}).`
+  : `All the articles I have published.`;
+
+const prevURL = page.url.prev ? new URL(page.url.prev, SITE.website).toString() : undefined;
+const nextURL = page.url.next ? new URL(page.url.next, SITE.website).toString() : undefined;
 ---
 
-<Layout title={`Posts | ${SITE.title}`}>
+<Layout title={metaTitle} description={metaDesc} prev={prevURL} next={nextURL}>
   <Header />
   <Breadcrumb />
   <main id="main-content" class="app-layout pb-4">
