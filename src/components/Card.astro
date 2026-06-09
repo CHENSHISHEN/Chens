@@ -13,9 +13,21 @@ import { SITE } from "@/config";
 type Props = {
   variant?: "h2" | "h3";
   featured?: boolean;
+  loading?: "lazy" | "eager";
+  fetchpriority?: "auto" | "high" | "low";
 } & (CollectionEntry<"blog"> | CollectionEntry<"galleries">);
 
-const { variant: Heading = "h2", featured = false, id, data, filePath, collection, body } = Astro.props;
+const {
+  variant: Heading = "h2",
+  featured = false,
+  loading = "lazy",
+  fetchpriority,
+  id,
+  data,
+  filePath,
+  collection,
+  body,
+} = Astro.props;
 
 const { title, description, pubDatetime } = data;
 const modDatetime = "modDatetime" in data ? data.modDatetime : null;
@@ -52,9 +64,14 @@ if (SITE.showCoverImages) {
       }
     }
   } else {
-    // Blog posts: prefer frontmatter ogImage, fallback to dynamic OG image
-    if ("ogImage" in data && data.ogImage) {
-      coverSrc = data.ogImage;
+    // Blog posts: prefer frontmatter coverImage, then ogImage, fallback to dynamic OG image
+    const coverImage = (data as { coverImage?: ImageMetadata }).coverImage;
+    const ogImage = "ogImage" in data ? data.ogImage : undefined;
+
+    if (coverImage) {
+      coverSrc = coverImage;
+    } else if (ogImage) {
+      coverSrc = ogImage;
     } else if (SITE.dynamicOgImage) {
       // Fallback: dynamically generated OG image (exists in dist/ after pnpm build)
       coverSrc = `${href}/index.png`;
@@ -119,7 +136,8 @@ if (SITE.showCoverImages) {
           src={coverSrc}
           alt={title}
           class="card-cover-img"
-          loading="lazy"
+          loading={loading}
+          fetchpriority={fetchpriority}
           widths={[400, 800]}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
@@ -128,8 +146,11 @@ if (SITE.showCoverImages) {
           src={coverSrc}
           alt={title}
           class="card-cover-img"
-          loading="lazy"
+          loading={loading}
+          fetchpriority={fetchpriority}
           decoding="async"
+          width="1200"
+          height="630"
           onerror="this.closest('[data-cover]').style.display='none'"
         />
       )}

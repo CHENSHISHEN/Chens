@@ -137,8 +137,8 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
           </div>
 
           <ul class="grid gap-4 sm:grid-cols-2 [&>li]:my-0">
-            {featuredPosts.map(data => (
-              <Card variant="h3" featured={true} {...data} />
+            {featuredPosts.map((data, index) => (
+              <Card variant="h3" featured={true} {...data} loading={index < 2 ? "eager" : "lazy"} fetchpriority={index < 2 ? "high" : "auto"} />
             ))}
           </ul>
         </section>
@@ -164,7 +164,14 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
           ]}>
             {recentPosts.map(
               (data, index) =>
-                index < SITE.postPerIndex && <Card variant="h3" {...data} />
+                index < SITE.postPerIndex && (
+                  <Card
+                    variant="h3"
+                    {...data}
+                    loading={index < 2 ? "eager" : "lazy"}
+                    fetchpriority={index < 2 ? "high" : "auto"}
+                  />
+                )
             )}
           </ul>
 
