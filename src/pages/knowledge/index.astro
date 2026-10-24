@@ -1,0 +1,50 @@
+---
+import SpaceLayout from "@/layouts/SpaceLayout.astro";
+import SpaceIcon from "@/components/SpaceIcon.astro";
+import { knowledge } from "@/data/space";
+---
+
+<SpaceLayout title="知识库">
+  <div class="page-topline">
+    <a href="/">个人空间</a><span class="mono">KNOWLEDGE GARDEN</span>
+  </div>
+  <section class="inner-hero">
+    <div class="inner-eyebrow">CONNECT THE DOTS</div><h1>
+      让零散知识，慢慢连成地图。
+    </h1><p>
+      博客按时间记录，知识库按主题组织。把值得复用的内容，整理成可以持续生长的手册。
+    </p>
+  </section>
+  <div class="demo-banner">
+    首版知识库按主题聚合示例文章；后续可以在每个主题下继续积累笔记。
+  </div>
+  <div class="project-grid">
+    {
+      knowledge.map(item => (
+        <a
+          href={`/posts/?topic=${item.tag}`}
+          class:list={["project-card", item.color]}
+        >
+          <>
+            <span class="module-icon">
+              <SpaceIcon name={item.icon} size={23} />
+            </span>
+            <h2>{item.name}</h2>
+            <p>{item.description}</p>
+            <ul class="knowledge-topics">
+              {item.topics.map(topic => (
+                <li>{topic}</li>
+              ))}
+            </ul>
+            <div class="card-bottom">
+              <>
+                <span>主题目录</span>
+                <span>阅读相关笔记 ↗</span>
+              </>
+            </div>
+          </>
+        </a>
+      ))
+    }
+  </div>
+</SpaceLayout>

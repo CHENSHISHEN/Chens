@@ -1,0 +1,35 @@
+---
+import SpaceLayout from "@/layouts/SpaceLayout.astro";
+import { projects } from "@/data/space";
+export function getStaticPaths() {
+  return projects.map(project => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+const { project } = Astro.props;
+---
+
+<SpaceLayout title={project.name} description={project.description}>
+  <a class="back-link" href="/projects/">← 返回项目</a>
+  <section class="inner-hero">
+    <div class="inner-eyebrow">{project.subtitle}</div><h1>{project.name}</h1><p
+    >
+      {project.description}
+    </p><div class:list={["tag-row", project.color]}>
+      {project.tags.map(tag => <span>{tag}</span>)}
+    </div>
+  </section>
+  <div class="demo-banner">
+    这是概念项目的展示示例，并非已交付成果。正式内容可补充仓库、截图、实现过程与实际结果。
+  </div>
+  <div class="detail-body">
+    <h2>想解决什么问题</h2><p>
+      {project.description} 这一页预留了从背景、方案到结果的完整项目介绍空间。
+    </p><h2>计划探索的方向</h2><ul>
+      {project.points.map(point => <li>{point}</li>)}
+    </ul><h2>下一步</h2><p>
+      下一步将补充实际的实现过程、界面截图与验证结果，让每个想法都有可以回看的成长记录。
+    </p>
+  </div>
+</SpaceLayout>

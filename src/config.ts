@@ -1,17 +1,17 @@
 export const SITE = {
-  website: "https://devosfera.vercel.app/",
-  author: "Andrés Ujpán",
+  website: process.env.PUBLIC_SITE_URL ?? "http://localhost:4321/",
+  author: "chen",
   profile: process.env.PUBLIC_SOCIAL_GITHUB ?? "", // set in .env
-  desc: "A space where curiosity becomes code. Exploring web development, software architecture and everything that makes the tech world spin.",
-  title: "Astro Devosfera",
-  ogImage: "devosfera-og.webp", // located in the public folder
+  desc: "chen 的个人空间，记录数据工程、AI 实践、项目探索与持续学习。",
+  title: "chen / space",
+  ogImage: "og.png", // located in the public folder
   lightAndDarkMode: true,
   postPerIndex: 6,
   postPerPage: 12,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
   showArchives: true,
-  showGalleries: true,
-  showGalleriesInIndex: true, // Show galleries in the general paginated list (only if showGalleries is true)
+  showGalleries: false,
+  showGalleriesInIndex: false, // Show galleries in the general paginated list (only if showGalleries is true)
   showBackButton: true, // show back button in post detail
   showTagsInCards: true, // show tag pills at the bottom of post cards
   showCoverImages: false, // show cover images (OG) in post cards (requires pnpm build in dev mode)
@@ -26,16 +26,16 @@ export const SITE = {
     grain: true, // background visual noise layer
   },
   editPost: {
-    enabled: true,
+    enabled: false,
     text: "Edit this post",
     url: process.env.PUBLIC_EDIT_POST_URL ?? "", // set in .env
   },
-  dynamicOgImage: true,
+  dynamicOgImage: false,
   dir: "ltr", // "rtl" | "auto"
-  lang: "en", // html lang code. Set this empty and default will be "en"
-  timezone: "America/Guatemala", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  lang: "zh-CN", // html lang code. Set this empty and default will be "en"
+  timezone: "Asia/Shanghai", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   introAudio: {
-    enabled: true, // show/hide intro player in home and compact player while navigating
+    enabled: false, // show/hide intro player in home and compact player while navigating
     // src: path to file (relative to /public or absolute URL). Example: "/intro.mp3" or "https://example.com/stream"
     src: "https://fluxfm.streamabc.net/flx-chillhop-mp3-128-8581707",
     // src: "/audio/intro-web.mp3",

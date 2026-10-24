@@ -1,0 +1,51 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getPath } from "@/utils/getPath";
+import { categories } from "@/data/space";
+import SpaceIcon from "./SpaceIcon.astro";
+interface Props {
+  post: CollectionEntry<"blog">;
+  featured?: boolean;
+}
+const { post, featured = false } = Astro.props;
+const category =
+  categories.find(category => post.data.tags.includes(category.tag)) ??
+  categories[3];
+const date = post.data.pubDatetime
+  .toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Shanghai",
+  })
+  .replaceAll("/", ".");
+const minutes = Math.max(1, Math.ceil((post.body?.length ?? 0) / 350));
+---
+
+<article
+  class:list={["space-post", { "featured-post": featured }, category.color]}
+  data-topic={category.tag}
+>
+  <a class="post-main-link" href={getPath(post.id, post.filePath)}>
+    <div class="post-eyebrow">
+      <span class:list={["content-category", category.color]}
+        ><SpaceIcon name={category.icon} size={13} />{category.name}</span
+      >{post.data.demo && <span class="example-label">内容示例</span>}{
+        featured && <SpaceIcon name="arrow" size={17} />
+      }
+    </div>
+    <h3>{post.data.title}</h3><p>{post.data.description}</p>
+    <div class="post-meta">
+      <span>{date}</span><span>·</span><span
+        ><SpaceIcon name="clock" size={12} />{minutes} 分钟阅读</span
+      ><span class="post-inline-tags"
+        >{
+          post.data.tags
+            .filter(tag => tag !== category.tag)
+            .slice(0, 2)
+            .map(tag => <span>#{tag}</span>)
+        }</span
+      >
+    </div>
+  </a>
+</article>
