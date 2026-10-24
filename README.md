@@ -32,4 +32,18 @@ pnpm preview --host 127.0.0.1 --port 4321
 
 第一版已包含博客、项目、知识库、工具箱、关于；工具在本地浏览器处理输入。项目卡片与文章为明确标注的展示示例，个人介绍待确认。原作者文章保留为草稿，相册暂关闭。
 
-GitHub 仓库：[CHENSHISHEN/chen-homepage](https://github.com/CHENSHISHEN/chen-homepage)（私有）。`origin` 指向个人项目仓库，`upstream` 指向原始模板仓库。尚未部署网站，未接入自动发布。
+GitHub 仓库：[CHENSHISHEN/Chens](https://github.com/CHENSHISHEN/Chens)（公开）。`origin` 指向个人项目仓库，`upstream` 指向原始模板仓库。
+
+## GitHub Pages 自动部署
+
+站点地址：[https://pages.chencc.cc/](https://pages.chencc.cc/)。
+
+推送到 `main` 后，`.github/workflows/deploy.yml` 使用 Node.js 24 和固定的 pnpm 11.25.0 执行 `pnpm run build`（包含类型检查、Astro 静态构建和 Pagefind 搜索索引），将 `dist/` 上传并发布到 GitHub Pages。也可以在 Actions 页面手动运行该工作流。
+
+- 仓库 Settings → Pages → Source 使用 **GitHub Actions**。
+- 工作流设置 `PUBLIC_SITE_URL=https://pages.chencc.cc/`，用于 canonical、RSS 和站点地图。
+- `public/CNAME` 会随构建复制到 `dist/CNAME`；Pages 设置中的自定义域名同样保持 `pages.chencc.cc`。
+- 自定义域名使用根路径，不设置 `/Chens` 作为 Astro `base`。
+- 本地默认地址仍为 `http://localhost:4321/`；模拟正式域名构建可运行 `PUBLIC_SITE_URL=https://pages.chencc.cc/ pnpm build`。
+
+构建和部署都成功后生效。后续文章、项目或样式修改推送到 `main`，都会自动更新网站。
