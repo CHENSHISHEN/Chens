@@ -1,0 +1,206 @@
+---
+import SpaceLayout from "@/layouts/SpaceLayout.astro";
+---
+
+<SpaceLayout
+  title="工具箱"
+  description="JSON 格式化、时间戳转换、文本统计，浏览器内即可使用的小工具。"
+>
+  <div class="page-topline">
+    <a href="/">个人空间</a><span class="mono"
+      >LITTLE TOOLS, LESS FRICTION</span>
+  </div>
+  <section class="inner-hero">
+    <div class="inner-eyebrow">MAKE THE EVERYDAY EASIER</div><h1>
+      顺手的小工具。
+    </h1><p>为日常开发省一点时间。输入内容仅在当前浏览器中处理。</p>
+  </section>
+  <div class="tool-tabs" role="tablist" aria-label="工具选择">
+    <button
+      class="filter-button"
+      role="tab"
+      id="tab-json"
+      aria-selected="true"
+      aria-pressed="true"
+      aria-controls="tool-json"
+      data-tool="json">JSON 格式化</button
+    ><button
+      class="filter-button"
+      role="tab"
+      id="tab-time"
+      aria-selected="false"
+      aria-pressed="false"
+      aria-controls="tool-time"
+      data-tool="time"
+      tabindex="-1">时间戳转换</button
+    ><button
+      class="filter-button"
+      role="tab"
+      id="tab-text"
+      aria-selected="false"
+      aria-pressed="false"
+      aria-controls="tool-text"
+      data-tool="text"
+      tabindex="-1">文本统计</button>
+  </div>
+  <section
+    id="tool-json"
+    class="tool-panel"
+    role="tabpanel"
+    aria-labelledby="tab-json"
+  >
+    <h2>JSON 格式化</h2><p>整理缩进、检查语法，让数据更容易阅读。</p><label
+      for="json-input">粘贴 JSON</label
+    ><textarea
+      id="json-input"
+      spellcheck="false"
+      placeholder='{"hello":"chen","space":["data","ai"]}'></textarea><button
+      class="button-primary"
+      id="json-format">格式化 JSON</button
+    ><button class="button-secondary" id="json-copy" hidden>复制结果</button
+    ><span id="copy-status" class="tool-status" role="status"></span><pre
+      id="json-result"
+      class="tool-result"
+      aria-live="polite"
+      hidden>
+    </pre>
+  </section>
+  <section
+    id="tool-time"
+    class="tool-panel"
+    role="tabpanel"
+    aria-labelledby="tab-time"
+    hidden
+  >
+    <h2>时间戳转换</h2><p>
+      支持秒（10 位）与毫秒（13 位）。同时显示 UTC 和北京时间。
+    </p><label for="time-input">Unix 时间戳</label><input
+      id="time-input"
+      inputmode="numeric"
+      placeholder="例如：1792713600"
+    /><div>
+      <button class="button-primary" id="time-convert">转换时间</button><button
+        class="button-secondary"
+        id="time-now">填入当前时间</button>
+    </div><pre id="time-result" class="tool-result" aria-live="polite" hidden>
+    </pre>
+  </section>
+  <section
+    id="tool-text"
+    class="tool-panel"
+    role="tabpanel"
+    aria-labelledby="tab-text"
+    hidden
+  >
+    <h2>文本统计</h2><p>统计字符、非空白字符和行数，输入后实时更新。</p><label
+      for="text-input">输入文本</label
+    ><textarea id="text-input" placeholder="把想法写在这里……"></textarea><div
+      class="text-stats"
+      aria-live="polite"
+    >
+      <span><strong id="stat-all">0</strong>全部字符</span><span
+        ><strong id="stat-clean">0</strong>非空白字符</span
+      ><span><strong id="stat-lines">0</strong>行数</span>
+    </div>
+  </section>
+</SpaceLayout>
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const tabs = Array.from(
+      document.querySelectorAll<HTMLButtonElement>("[data-tool]")
+    );
+    if (!tabs.length) return;
+    const select = (tab: HTMLButtonElement) => {
+      tabs.forEach(item => {
+        const active = item === tab;
+        item.setAttribute("aria-selected", String(active));
+        item.setAttribute("aria-pressed", String(active));
+        item.tabIndex = active ? 0 : -1;
+        const panel = document.getElementById(`tool-${item.dataset.tool}`);
+        if (panel) panel.hidden = !active;
+      });
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => select(tab));
+      tab.addEventListener("keydown", event => {
+        let next = index;
+        if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+        else if (event.key === "ArrowLeft")
+          next = (index + tabs.length - 1) % tabs.length;
+        else if (event.key === "Home") next = 0;
+        else if (event.key === "End") next = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        select(tabs[next]);
+        tabs[next].focus();
+      });
+    });
+    const jsonInput =
+      document.querySelector<HTMLTextAreaElement>("#json-input")!;
+    const jsonResult = document.querySelector<HTMLElement>("#json-result")!;
+    const copy = document.querySelector<HTMLButtonElement>("#json-copy")!;
+    const copyStatus = document.getElementById("copy-status")!;
+    document.getElementById("json-format")?.addEventListener("click", () => {
+      jsonResult.hidden = false;
+      copyStatus.textContent = "";
+      try {
+        jsonResult.textContent = JSON.stringify(
+          JSON.parse(jsonInput.value),
+          null,
+          2
+        );
+        jsonResult.dataset.error = "false";
+        copy.hidden = false;
+      } catch {
+        jsonResult.textContent = jsonInput.value.trim()
+          ? "JSON 语法有误，请检查引号、逗号与括号。"
+          : "请先输入 JSON 内容。";
+        jsonResult.dataset.error = "true";
+        copy.hidden = true;
+      }
+    });
+    copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(jsonResult.textContent ?? "");
+        copyStatus.textContent = "已复制";
+      } catch {
+        copyStatus.textContent = "请选中结果手动复制";
+      }
+    });
+    const timeInput = document.querySelector<HTMLInputElement>("#time-input")!;
+    const timeResult = document.querySelector<HTMLElement>("#time-result")!;
+    const convert = () => {
+      const value = timeInput.value.trim();
+      timeResult.hidden = false;
+      if (!/^-?\d{10}$|^-?\d{13}$/.test(value)) {
+        timeResult.textContent = "请输入 10 位秒级或 13 位毫秒级 Unix 时间戳。";
+        timeResult.dataset.error = "true";
+        return;
+      }
+      const date = new Date(
+        Number(value) * (value.replace("-", "").length === 10 ? 1000 : 1)
+      );
+      timeResult.dataset.error = "false";
+      timeResult.textContent = `UTC：${date.toISOString()}\n北京时间：${date.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}\n秒级：${Math.floor(date.valueOf() / 1000)}\n毫秒级：${date.valueOf()}`;
+    };
+    document.getElementById("time-convert")?.addEventListener("click", convert);
+    document.getElementById("time-now")?.addEventListener("click", () => {
+      timeInput.value = String(Date.now());
+      convert();
+    });
+    const textInput =
+      document.querySelector<HTMLTextAreaElement>("#text-input")!;
+    textInput.addEventListener("input", () => {
+      const value = textInput.value;
+      document.getElementById("stat-all")!.textContent = String(
+        Array.from(value).length
+      );
+      document.getElementById("stat-clean")!.textContent = String(
+        Array.from(value.replace(/\s/g, "")).length
+      );
+      document.getElementById("stat-lines")!.textContent = String(
+        value ? value.split(/\r\n|\r|\n/).length : 0
+      );
+    });
+  });
+</script>

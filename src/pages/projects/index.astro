@@ -1,0 +1,51 @@
+---
+import SpaceLayout from "@/layouts/SpaceLayout.astro";
+import SpaceIcon from "@/components/SpaceIcon.astro";
+import { projects } from "@/data/space";
+---
+
+<SpaceLayout title="项目">
+  <div class="page-topline">
+    <a href="/">个人空间</a><span class="mono">SELECTED PROJECTS</span>
+  </div>
+  <section class="inner-hero">
+    <div class="inner-eyebrow">FROM IDEA TO SOMETHING REAL</div><h1>
+      动手，让想法有形状。
+    </h1><p>
+      一个存放实验和作品的地方。记录为什么开始、怎样实现，以及从中学到什么。
+    </p>
+  </section>
+  <div class="demo-banner">
+    以下为项目展示结构示例，尚未填写真实项目经历、仓库地址与成果。
+  </div>
+  <div class="project-grid">
+    {
+      projects.map(project => (
+        <a
+          class:list={["project-card", project.color]}
+          href={`/projects/${project.slug}/`}
+        >
+          <>
+            <span class="module-icon">
+              <SpaceIcon name={project.icon} size={23} />
+            </span>
+            <div class="inner-eyebrow">{project.subtitle}</div>
+            <h2>{project.name}</h2>
+            <p>{project.description}</p>
+            <div class="tag-row">
+              {project.tags.map(tag => (
+                <span>{tag}</span>
+              ))}
+            </div>
+            <div class="card-bottom">
+              <>
+                <span>概念示例</span>
+                <span>查看项目 ↗</span>
+              </>
+            </div>
+          </>
+        </a>
+      ))
+    }
+  </div>
+</SpaceLayout>

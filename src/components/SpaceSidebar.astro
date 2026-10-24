@@ -1,0 +1,81 @@
+---
+import { getCollection } from "astro:content";
+import { categories, navigation } from "@/data/space";
+import SpaceIcon from "./SpaceIcon.astro";
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+const path = Astro.url.pathname;
+---
+
+<aside class="space-sidebar" aria-label="内容导航" data-pagefind-ignore>
+  <div class="sidebar-profile">
+    <div class="profile-avatar">c<span>_</span><i></i></div><div>
+      <strong>chen</strong><span>学习 · 构建 · 分享</span>
+    </div>
+  </div>
+  <div class="sidebar-heading">探索空间 <span>EXPLORE</span></div>
+  <nav class="sidebar-links" aria-label="空间模块">
+    <a
+      href="/"
+      class:list={[{ active: path === "/" }]}
+      aria-current={path === "/" ? "page" : undefined}
+      ><SpaceIcon name="home" size={17} /><span>空间首页</span><span
+        class="sidebar-key">⌂</span
+      ></a
+    >
+    {
+      navigation.slice(0, 4).map(item => (
+        <a
+          href={item.href}
+          class:list={[{ active: path.startsWith(item.href) }]}
+          aria-current={path.startsWith(item.href) ? "page" : undefined}
+        >
+          <SpaceIcon name={item.icon} size={17} />
+          <span>{item.label === "博客" ? "全部文章" : item.label}</span>
+          {item.label === "博客" && (
+            <span class="sidebar-count">
+              {posts.length.toString().padStart(2, "0")}
+            </span>
+          )}
+        </a>
+      ))
+    }
+  </nav>
+  <div class="sidebar-heading category-heading">
+    按主题阅读 <span>TOPICS</span>
+  </div>
+  <nav class="sidebar-links topic-links" aria-label="文章分类">
+    {
+      categories.map(category => (
+        <a href={`/posts/?topic=${category.tag}`}>
+          <>
+            <span class:list={["topic-dot", category.color]} />
+            <span>{category.name}</span>
+            <span class="sidebar-count">
+              {posts
+                .filter(post => post.data.tags.includes(category.tag))
+                .length.toString()
+                .padStart(2, "0")}
+            </span>
+          </>
+        </a>
+      ))
+    }
+  </nav>
+  <div class="sidebar-heading category-heading">更多 <span>MORE</span></div>
+  <nav class="sidebar-links" aria-label="更多链接">
+    <a href="/about/"><SpaceIcon name="user" size={17} /><span>关于我</span></a
+    ><a href="/rss.xml"
+      ><SpaceIcon name="rss" size={17} /><span>订阅 RSS</span><SpaceIcon
+        name="external"
+        size={12}
+      /></a>
+  </nav>
+  <div class="sidebar-note">
+    <span class="note-star">✳</span><p>
+      想法在这里发芽，<br />慢慢长成自己的森林。
+    </p><span class="mono">A DIGITAL GARDEN</span>
+  </div>
+  <div class="sidebar-status">
+    <span class="status-dot"></span>这个空间，持续生长中<span>↗</span>
+  </div>
+</aside>

@@ -5,6 +5,7 @@ import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import SearchModal from "@/components/SearchModal.astro";
 import "@/styles/global.css";
+import "@/styles/space.css";
 
 type Props = {
   title?: string;
@@ -96,7 +97,7 @@ const finalStructuredData = structuredDataProp ?? (
             mainEntity: {
               "@type": "Person",
               name: author,
-              description: "Developer, student, and gamer. Creator of Astro Devosfera.",
+              description: SITE.desc,
               ...(profile && { url: profile }),
             },
           }
@@ -214,7 +215,7 @@ const showGrain = SITE.backdropEffects.grain;
     <!-- Minimal inline script to prevent FOUC - sets theme immediately -->
     <script is:inline>
       (function () {
-        const initialColorScheme = ""; // "light" | "dark"
+        const initialColorScheme = "dark"; // "light" | "dark"
         const currentTheme = localStorage.getItem("theme");
 
         function getPreferTheme() {
