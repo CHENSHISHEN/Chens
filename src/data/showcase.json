@@ -1,0 +1,29 @@
+[
+  {
+    "id": "m_202610_yunnan",
+    "title": "2026 玉龙雪山索道与清晨日照金山",
+    "category": "云南自驾",
+    "date": "2026.10",
+    "duration": "00:20",
+    "posterUrl": "/assets/covers/m_202610_yunnan_poster.webp",
+    "teaserVideoUrl": "/assets/clips/m_202610_yunnan_teaser.mp4"
+  },
+  {
+    "id": "m_202606_baby",
+    "title": "宝宝一周岁生日抓周与夏日野餐",
+    "category": "成长记录",
+    "date": "2026.06",
+    "duration": "00:20",
+    "posterUrl": "/assets/covers/m_202606_baby_poster.webp",
+    "teaserVideoUrl": "/assets/clips/m_202606_baby_teaser.mp4"
+  },
+  {
+    "id": "m_202605_camping",
+    "title": "山谷溪边篝火与星空延时摄影",
+    "category": "露营纪实",
+    "date": "2026.05",
+    "duration": "00:20",
+    "posterUrl": "/assets/covers/m_202605_camping_poster.webp",
+    "teaserVideoUrl": "/assets/clips/m_202605_camping_teaser.mp4"
+  }
+]

@@ -1,0 +1,175 @@
+---
+import items from "@/data/showcase.json";
+
+interface Props {
+  mediaAppUrl?: string;
+}
+
+const { 
+  mediaAppUrl = "https://media.chencc.cc" 
+} = Astro.props;
+---
+
+<section class="family-showcase-section my-10" aria-label="精选家庭影像橱窗">
+  <div class="flex items-center justify-between mb-4 px-1">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="text-teal-400 font-bold">🎬</span>
+        <h2 class="text-xl font-bold tracking-tight text-foreground">家庭影音精选</h2>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-teal-300">MEDIA</span>
+      </div>
+      <p class="text-xs text-muted-foreground mt-0.5">公开脱敏精选 · 悬停微预览 · 点击观看原画</p>
+    </div>
+    <div class="flex gap-2">
+      <button 
+        id="embla-prev-btn" 
+        class="w-7 h-7 rounded-full border border-border bg-card/60 hover:bg-accent text-foreground transition flex items-center justify-center cursor-pointer" 
+        aria-label="上一张"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button 
+        id="embla-next-btn" 
+        class="w-7 h-7 rounded-full border border-border bg-card/60 hover:bg-accent text-foreground transition flex items-center justify-center cursor-pointer" 
+        aria-label="下一张"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Embla 视口容器 -->
+  <div class="embla overflow-hidden" id="family-embla-viewport">
+    <div class="embla__container flex -ml-4">
+      {items.map((item) => (
+        <div class="embla__slide flex-[0_0_86%] sm:flex-[0_0_48%] lg:flex-[0_0_32%] pl-4 min-w-0">
+          <!-- 极简整卡链接设计 (整卡点击直接进入影院) -->
+          <a 
+            href={`${mediaAppUrl}/watch/${item.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="media-card group block rounded-xl transition-all duration-300"
+            data-teaser-src={item.teaserVideoUrl}
+            aria-label={`观看 ${item.title}`}
+          >
+            <!-- 封面图与动态预览容器 -->
+            <div class="aspect-video relative rounded-xl overflow-hidden bg-muted border border-border group-hover:border-primary/50 group-hover:shadow-lg transition-all duration-300">
+              <img 
+                src={item.posterUrl} 
+                alt={item.title} 
+                loading="lazy" 
+                decoding="async" 
+                class="card-poster w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <!-- 动态创建的 video 将由脚本按需挂载到这里 -->
+              <div class="video-mount-point absolute inset-0 w-full h-full pointer-events-none"></div>
+
+              <!-- 左上角受保护与画质标识 -->
+              <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-black/60 text-teal-300 backdrop-blur-sm border border-white/10 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>4K</span>
+              </div>
+
+              <!-- 右下角时长 -->
+              <div class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded text-[11px] font-mono bg-black/75 text-zinc-300 backdrop-blur-sm">
+                {item.duration}
+              </div>
+            </div>
+
+            <!-- 卡片信息 (极简纯粹两行) -->
+            <div class="pt-2.5 px-0.5 space-y-0.5">
+              <h3 class="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">
+                {item.title}
+              </h3>
+              <div class="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+                <span>{item.category}</span>
+                <span>·</span>
+                <time datetime={item.date}>{item.date}</time>
+              </div>
+            </div>
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 客户端运行时：Embla 初始化与按需懒加载 -->
+<script>
+  import EmblaCarousel from 'embla-carousel';
+
+  function initShowcase() {
+    const viewportNode = document.getElementById('family-embla-viewport');
+    const prevBtn = document.getElementById('embla-prev-btn');
+    const nextBtn = document.getElementById('embla-next-btn');
+    if (!viewportNode) return;
+
+    // 1. 初始化轮播
+    const embla = EmblaCarousel(viewportNode, {
+      loop: false,
+      align: 'start',
+      skipSnaps: false,
+      dragFree: false
+    });
+
+    prevBtn?.addEventListener('click', () => embla.scrollPrev());
+    nextBtn?.addEventListener('click', () => embla.scrollNext());
+
+    // 2. 悬停/交互加载 3s 微预览 (杜绝同时加载全部视频)
+    const cards = viewportNode.querySelectorAll<HTMLElement>('.media-card');
+    
+    // 检查用户是否偏好减少动态效果 (Accessibility)
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    cards.forEach((card) => {
+      const teaserSrc = card.dataset.teaserSrc;
+      const mountPoint = card.querySelector('.video-mount-point');
+      if (!teaserSrc || !mountPoint) return;
+
+      let videoEl: HTMLVideoElement | null = null;
+
+      const mountAndPlay = () => {
+        if (!videoEl) {
+          videoEl = document.createElement('video');
+          videoEl.src = teaserSrc;
+          videoEl.muted = true;
+          videoEl.loop = true;
+          videoEl.playsInline = true;
+          videoEl.className = 'w-full h-full object-cover transition-opacity duration-300 opacity-0';
+          mountPoint.appendChild(videoEl);
+
+          videoEl.addEventListener('loadeddata', () => {
+            if (videoEl) videoEl.style.opacity = '1';
+          });
+        }
+        videoEl.play().catch(() => {});
+      };
+
+      const pauseAndHide = () => {
+        if (videoEl) {
+          videoEl.pause();
+          videoEl.style.opacity = '0';
+        }
+      };
+
+      // 桌面端鼠标悬停
+      card.addEventListener('mouseenter', mountAndPlay);
+      card.addEventListener('mouseleave', pauseAndHide);
+    });
+  }
+
+  // 适配页面初次加载与 Astro View Transitions 切换
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShowcase);
+  } else {
+    initShowcase();
+  }
+  document.addEventListener('astro:page-load', initShowcase);
+</script>
+
+<style>
+  .embla__slide {
+    transform: translate3d(0, 0, 0);
+  }
+</style>
